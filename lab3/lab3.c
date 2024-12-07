@@ -12,7 +12,7 @@ static int __init tsu_init(void)
 
 static void __exit tsu_exit(void)
 {
-	pr_info("Welcome State University forever!\n");
+	pr_info("Tomsk State University forever!\n");
 	
 }
 module_init(tsu_init);
