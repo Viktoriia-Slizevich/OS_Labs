@@ -7,14 +7,13 @@
 #include <linux/timekeeping.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Your Name");
 MODULE_DESCRIPTION("Module to create /proc/tsulab with time to Chinese New Year");
 
 static struct proc_dir_entry *tsulab_entry;
 static u64 previous_time_left = 0; // Предыдущее значение времени до китайского нового года
 
 // Функция для вычисления времени до китайского нового года
-static u64 time_to_chinese_new_year(void)
+static u64 time_to_chinese_new_year(void) 
 {
     struct tm current_time, new_year_time;
     time64_t now, new_year;
@@ -24,18 +23,16 @@ static u64 time_to_chinese_new_year(void)
     now = ktime_get_real_seconds();
     time64_to_tm(now, 0, &current_time);
 
-    // Устанавливаем время китайского нового года (например, 1 января следующего года)
-    new_year_time.tm_year = current_time.tm_year + 1900; // Следующий год
-    new_year_time.tm_mon = 0; // Январь
-    new_year_time.tm_mday = 1; // 1 января
+    // Устанавливаем время китайского нового года
+    new_year_time.tm_year = current_time.tm_year + 1900 + 1; // Следующий год 
+    new_year_time.tm_mon = 1; // febrary
+    new_year_time.tm_mday = 10; // 10 date
     new_year_time.tm_hour = 0;
     new_year_time.tm_min = 0;
     new_year_time.tm_sec = 0;
-    new_year_time.tm_isdst = -1;
-
+    
     // Вычисляем время китайского нового года
-    new_year = mktime64(new_year_time.tm_year, new_year_time.tm_mon + 1, new_year_time.tm_mday,
-                        new_year_time.tm_hour, new_year_time.tm_min, new_year_time.tm_sec);
+    new_year = mktime64(new_year_time.tm_year, new_year_time.tm_mon + 1, new_year_time.tm_mday, new_year_time.tm_hour, new_year_time.tm_min, new_year_time.tm_sec);
 
     // Вычисляем разницу между текущим временем и временем нового года
     diff = new_year - now;
@@ -77,7 +74,7 @@ static const struct file_operations tsulab_fops = {
 
 static int __init tsu_init(void)
 {
-    pr_info("Welcome to the Tomsk State University\n");
+    pr_info("HI\n");
 
     // Создаем файл /proc/tsulab
     tsulab_entry = proc_create("tsulab", 0, NULL, &tsulab_fops);
@@ -91,7 +88,7 @@ static int __init tsu_init(void)
 
 static void __exit tsu_exit(void)
 {
-    pr_info("Tomsk State University forever!\n");
+    pr_info("BYE\n");
 
     // Удаляем файл /proc/tsulab
     if (tsulab_entry) {
