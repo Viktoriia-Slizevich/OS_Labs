@@ -59,7 +59,7 @@ static int tsulab_show(struct seq_file *m, void *v)
     return 0;
 }
 
-static int tsulab_open(struct inode *inode, struct file *file)
+static int tsulab_open(struct inode *inode, struct file *file) //автоматом вызывается при команде в терминале для открытия файла
 {
     return single_open(file, tsulab_show, NULL);
 }
