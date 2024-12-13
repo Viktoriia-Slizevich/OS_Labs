@@ -2,7 +2,7 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/proc_fs.h>
-#include <linux/seq_file.h>
+#include <linux/seq_file.h> // работа с файлом proc
 #include <linux/time.h>
 #include <linux/timekeeping.h>
 
