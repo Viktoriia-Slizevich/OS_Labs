@@ -1,24 +1,18 @@
-// Подключение необходимых заголовочных файлов
-#include <linux/module.h>  // Для работы с модулями ядра
-#include <linux/kernel.h>  // Для использования функций ядра (pr_info, printk)
-#include <linux/init.h>    // Для макросов __init и __exit
-#include <linux/proc_fs.h> // Для работы с файловой системой /proc
-#include <linux/uaccess.h> // Для копирования данных между пространствами пользователя и ядра
-#include <linux/time.h>    // Для работы со временем
-#include <linux/timekeeping.h> // Для получения текущего времени
 
-// Макросы для лицензии и автора модуля
-MODULE_LICENSE("GPL");  // Лицензия модуля (General Public License)
-MODULE_AUTHOR("Tomsk State University");  // Автор модуля
+#include <linux/module.h> 
+#include <linux/kernel.h>  
+#include <linux/init.h>    
+#include <linux/proc_fs.h> 
+#include <linux/uaccess.h> // Для копирования данных между пространствами пользователя и ядра
+#include <linux/time.h>   
+#include <linux/timekeeping.h> 
+
+MODULE_LICENSE("GPL");  
 MODULE_DESCRIPTION("Module to create /proc/tsulab with time to Chinese New Year");  // Краткое описание модуля
 
-// Определяем имя файла в каталоге /proc
 #define PROC_FILE_NAME "tsulab"
-
-// Переменные для хранения времени до китайского нового года
 static u64 previous_time_left = 0; // Предыдущее значение времени до китайского нового года
 
-// Указатель на запись в /proc
 static struct proc_dir_entry *proc_file;
 
 // Функция для вычисления времени до китайского нового года
@@ -42,11 +36,7 @@ static u64 time_to_chinese_new_year(void) {
     // Вычисляем время китайского нового года
     new_year = mktime64(new_year_time.tm_year, new_year_time.tm_mon + 1, new_year_time.tm_mday,
                         new_year_time.tm_hour, new_year_time.tm_min, new_year_time.tm_sec);
-
-    // Вычисляем разницу между текущим временем и временем нового года
     diff = new_year - now;
-
-    // Преобразуем разницу в миллисекунды
     return diff * 1000;
 }
 
@@ -59,7 +49,7 @@ static ssize_t tsulab_read(struct file *file, char __user *buf, size_t count, lo
 
     // Проверка позиции для EOF
     if (*pos > 0) {
-        return 0; // EOF
+        return 0; 
     }
 
     // Вычисляем время, прошедшее с момента предыдущего чтения
@@ -67,34 +57,30 @@ static ssize_t tsulab_read(struct file *file, char __user *buf, size_t count, lo
         time_passed = previous_time_left - current_time_left;
     }
 
-    // Формируем строку с текущими данными
-    len = snprintf(message, sizeof(message), "Время до китайского нового года: %llu мс, прошло времени: %llu мс\n", current_time_left, time_passed);
+    // Формируем строку с данными
+    len = snprintf(message, sizeof(message), "Время до китайского нового года: %llu мс, прошло времени с предыдущего обращения: %llu мс\n", current_time_left, time_passed);
 
     // Сохраняем текущее значение для следующего чтения
     previous_time_left = current_time_left;
 
     // Копируем данные из пространства ядра в пространство пользователя
     if (copy_to_user(buf, message, len)) {
-        return -EFAULT; // Возвращаем ошибку, если копирование не удалось
+        return -EFAULT; 
     }
 
     // Обновляем позицию для следующего чтения
     *pos += len;
     return len;
 }
-
-// Операции для работы с файлом в /proc
+// надо для работы с proc
 static const struct file_operations proc_file_fops = {
     .owner = THIS_MODULE,
     .read = tsulab_read,
 };
 
-// Функция инициализации модуля
-// Выполняется при загрузке модуля в ядро
 static int __init tsu_module_init(void) {
-    pr_info("Welcome to the Tomsk State University\n");  // Вывод сообщения в журнал ядра
+    pr_info("HI\n");  // Вывод сообщения в журнал ядра
 
-    // Создаём файл в /proc
     proc_file = proc_create(PROC_FILE_NAME, 0444, NULL, &proc_file_fops);
     if (!proc_file) {
         pr_err("Failed to create /proc/%s\n", PROC_FILE_NAME);
@@ -102,19 +88,15 @@ static int __init tsu_module_init(void) {
     }
 
     pr_info("/proc/%s created\n", PROC_FILE_NAME);
-    return 0;  // Возвращаем 0 при успешной инициализации
+    return 0;  // успех
 }
 
-// Функция очистки модуля
-// Выполняется при выгрузке модуля из ядра
 static void __exit tsu_module_exit(void) {
-    // Удаляем файл из /proc
     proc_remove(proc_file);
     pr_info("/proc/%s removed\n", PROC_FILE_NAME);
 
-    pr_info("Tomsk State University forever!\n");  // Вывод сообщения в журнал ядра
+    pr_info("BYE!\n");  
 }
 
-// Макросы для указания функций инициализации и очистки
-module_init(tsu_module_init);  // Указание функции инициализации
-module_exit(tsu_module_exit);  // Указание функции очистки
+module_init(tsu_module_init);  
+module_exit(tsu_module_exit);  
