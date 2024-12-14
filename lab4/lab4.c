@@ -84,8 +84,9 @@ static ssize_t tsulab_read(struct file *file, char __user *buf, size_t count, lo
 }
 
 // Операции для работы с файлом в /proc
-static const struct proc_ops proc_file_ops = {
-    .proc_read = tsulab_read,
+static const struct file_operations proc_file_fops = {
+    .owner = THIS_MODULE,
+    .read = tsulab_read,
 };
 
 // Функция инициализации модуля
@@ -94,7 +95,7 @@ static int __init tsu_module_init(void) {
     pr_info("Welcome to the Tomsk State University\n");  // Вывод сообщения в журнал ядра
 
     // Создаём файл в /proc
-    proc_file = proc_create(PROC_FILE_NAME, 0444, NULL, &proc_file_ops);
+    proc_file = proc_create(PROC_FILE_NAME, 0444, NULL, &proc_file_fops);
     if (!proc_file) {
         pr_err("Failed to create /proc/%s\n", PROC_FILE_NAME);
         return -ENOMEM;
