@@ -3,12 +3,12 @@
 #include <linux/kernel.h>  
 #include <linux/init.h>    
 #include <linux/proc_fs.h> 
-#include <linux/uaccess.h> // Для копирования данных между пространствами пользователя и ядра
+#include <linux/uaccess.h> // копирование данных между пространствами пользователя и ядра
 #include <linux/time.h>   
 #include <linux/timekeeping.h> 
 
 MODULE_LICENSE("GPL");  
-MODULE_DESCRIPTION("Module to create /proc/tsulab with time to Chinese New Year");  // Краткое описание модуля
+MODULE_DESCRIPTION("Module to create /proc/tsulab with time to Chinese New Year");  
 
 #define PROC_FILE_NAME "tsulab"
 static u64 previous_time_left = 0; // Предыдущее значение времени до китайского нового года
@@ -79,7 +79,7 @@ static const struct file_operations proc_file_fops = {
 };
 
 static int __init tsu_module_init(void) {
-    pr_info("HI\n");  // Вывод сообщения в журнал ядра
+    pr_info("HI\n");  
 
     proc_file = proc_create(PROC_FILE_NAME, 0444, NULL, &proc_file_fops);
     if (!proc_file) {
@@ -88,7 +88,7 @@ static int __init tsu_module_init(void) {
     }
 
     pr_info("/proc/%s created\n", PROC_FILE_NAME);
-    return 0;  // успех
+    return 0;  // успешно
 }
 
 static void __exit tsu_module_exit(void) {
